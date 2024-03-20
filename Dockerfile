@@ -5,6 +5,7 @@ COPY package*.json ./
 
 # ---- Dependencies ----
 FROM base AS dependencies
+# Install production dependencies
 RUN npm install --only=production
 # Copy production node_modules aside
 RUN cp -R node_modules prod_node_modules
@@ -14,15 +15,18 @@ RUN npm install
 # ---- Build ----
 FROM dependencies AS build
 COPY . .
-RUN cd client
+# Correctly navigate to 'client' and run build script
+WORKDIR /app/client
 RUN npm run build
+# Navigate back to the app directory
+WORKDIR /app
 
 # ---- Release ----
 FROM base AS release
 # Copy production node_modules
 COPY --from=dependencies /app/prod_node_modules ./node_modules
-# Copy app sources
-COPY --from=build /app/build ./build
+# Copy built sources from the 'build' stage
+COPY --from=build /app/client/build ./build
 # Expose port
 EXPOSE 3000
 CMD ["npm", "start"]
