@@ -1,32 +1,9 @@
-# ---- Base Node ----
-FROM node:20-alpine AS base
+FROM node:18-alpine AS build
 WORKDIR /app
-COPY package*.json ./
-
-# ---- Dependencies ----
-FROM base AS dependencies
-# Install production dependencies
-RUN npm install --only=production
-# Copy production node_modules aside
-RUN cp -R node_modules prod_node_modules
-# Install ALL node_modules, including 'devDependencies'
+COPY package.json ./
 RUN npm install
-
-# ---- Build ----
-FROM dependencies AS build
-COPY . .
-# Correctly navigate to 'client' and run build script
+COPY server ./server
+COPY client ./client
 WORKDIR /app/client
+RUN npm install
 RUN npm run build
-# Navigate back to the app directory
-WORKDIR /app
-
-# ---- Release ----
-FROM base AS release
-# Copy production node_modules
-COPY --from=dependencies /app/prod_node_modules ./node_modules
-# Copy built sources from the 'build' stage
-COPY --from=build /app/client/build ./build
-# Expose port
-EXPOSE 3000
-CMD ["npm", "start"]
