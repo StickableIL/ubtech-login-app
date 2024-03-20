@@ -14,6 +14,7 @@ RUN npm install
 # ---- Build ----
 FROM dependencies AS build
 COPY . .
+RUN cd client
 RUN npm run build
 
 # ---- Release ----
