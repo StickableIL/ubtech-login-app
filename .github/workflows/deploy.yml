@@ -35,3 +35,22 @@ jobs:
 
     outputs:
       image: ${{ steps.vars.outputs.image }}
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: build
+
+    steps:
+      - name: Azure Login
+        uses: azure/login@v1
+        with:
+          creds: '{"clientId":"${{ secrets.AZURE_CLIENT_ID }}","clientSecret":"${{ secrets.AZURE_CLIENT_SECRET }}","subscriptionId":"2837fa98-ba70-4d44-a7e7-730ceb335460","tenantId":"${{ secrets.AZURE_TENANT_ID }}"}'
+
+      - name: Deploy to Azure Container Apps
+        uses: azure/container-apps-deploy-action@v1
+        with:
+          acrName: apploginubtechtest
+          appName: applogin
+          resourceGroup: osher-rg
+          imageToDeploy: ${{ needs.build.outputs.image }}
+          containerPort: 80
