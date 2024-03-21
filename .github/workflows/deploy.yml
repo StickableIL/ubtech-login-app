@@ -18,22 +18,14 @@ jobs:
         with:
           creds: '{"clientId":"${{ secrets.AZURE_CLIENT_ID }}","clientSecret":"${{ secrets.AZURE_CLIENT_SECRET }}","subscriptionId":"2837fa98-ba70-4d44-a7e7-730ceb335460","tenantId":"${{ secrets.AZURE_TENANT_ID }}"}'
 
-      - name: Create Azure Container Registry
-        run: |
-          az acr create --name apploginubtechtest --resource-group osher-rg --sku Basic --location westeurope --admin-enabled true
-          ACR_USERNAME=$(az acr credential show --name apploginubtechtest --query "username" --output tsv)
-          ACR_PASSWORD=$(az acr credential show --name apploginubtechtest --query "passwords[0].value" --output tsv)
-          echo "ACR_USERNAME=$ACR_USERNAME" >> $GITHUB_ENV
-          echo "ACR_PASSWORD=$ACR_PASSWORD" >> $GITHUB_ENV
-
       - name: Build and push Docker image to ACR
         uses: docker/build-push-action@v2
         with:
           context: .
           push: true
           tags: apploginubtechtest.azurecr.io/applogin:${{ github.sha }}
-          username: ${{ env.ACR_USERNAME }}
-          password: ${{ env.ACR_PASSWORD }}
+          username: ${{ secrets.ACR_USERNAME }}
+          password: ${{ secrets.ACR_PASSWORD }}
 
       - name: Deploy to Azure Container Apps
         uses: azure/container-apps-deploy-action@v1
