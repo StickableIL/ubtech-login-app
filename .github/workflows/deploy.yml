@@ -18,14 +18,17 @@ jobs:
         with:
           creds: '{"clientId":"${{ secrets.AZURE_CLIENT_ID }}","clientSecret":"${{ secrets.AZURE_CLIENT_SECRET }}","subscriptionId":"2837fa98-ba70-4d44-a7e7-730ceb335460","tenantId":"${{ secrets.AZURE_TENANT_ID }}"}'
 
-      - name: Build and push Docker image to ACR
-        uses: docker/build-push-action@v2
+      - name: Login to Azure Container Registry
+        uses: azure/docker-login@v1
         with:
-          context: .
-          push: true
-          tags: apploginubtechtest.azurecr.io/applogin:${{ github.sha }}
+          login-server: apploginubtechtest.azurecr.io
           username: ${{ secrets.ACR_USERNAME }}
           password: ${{ secrets.ACR_PASSWORD }}
+
+      - name: Build and push Docker image to ACR
+        run: |
+          docker build -t apploginubtechtest.azurecr.io/applogin:${{ github.sha }} .
+          docker push apploginubtechtest.azurecr.io/applogin:${{ github.sha }}
 
       - name: Deploy to Azure Container Apps
         uses: azure/container-apps-deploy-action@v1
