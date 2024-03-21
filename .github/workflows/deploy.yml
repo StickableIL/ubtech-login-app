@@ -30,6 +30,14 @@ jobs:
           docker build -t apploginubtechtest.azurecr.io/applogin:${{ github.sha }} .
           docker push apploginubtechtest.azurecr.io/applogin:${{ github.sha }}
 
+      - name: Assign AcrPull role to ACA's managed identity
+        uses: azure/CLI@v1
+        with:
+          inlineScript: |
+            acrId=$(az acr show --name apploginubtechtest --query id --output tsv)
+            managedIdentityId=$(az containerapp show --name applogin --resource-group osher-rg --query identity.principalId --output tsv)
+            az role assignment create --assignee $managedIdentityId --scope $acrId --role acrpull
+
       - name: Deploy to Azure Container Apps
         uses: azure/container-apps-deploy-action@v1
         with:
@@ -37,3 +45,4 @@ jobs:
           appName: applogin
           resourceGroup: osher-rg
           imageToDeploy: apploginubtechtest.azurecr.io/applogin:${{ github.sha }}
+          containerPort: 80
