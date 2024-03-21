@@ -23,15 +23,9 @@ const LoginPage = () => {
       });
 
       if (response.ok) {
-        const { username } = await response.json(); // Extract username from the response
-
-        // Ensure the username is actually provided in the response
-        if(username) {
-          localStorage.setItem('username', username); // Store the username
-          navigate('/welcome');
-        } else {
-          setError('Login successful, but the username was not provided.');
-        }
+        const data = await response.json();
+        localStorage.setItem('username', data.username);
+        navigate('/welcome');
       } else {
         const errorData = await response.json();
         setError(errorData.message || 'Invalid username or password');

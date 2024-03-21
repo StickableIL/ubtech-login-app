@@ -6,6 +6,7 @@ const Welcome = () => {
 
   const handleLogout = () => {
     localStorage.removeItem('username');
+    console.log('DB_SERVER:', process.env.DB_SERVER);
     window.location.href = '/'; // Redirect to home
   };
 
