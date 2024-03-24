@@ -12,9 +12,6 @@ provider "azurerm" {
   features {}
   subscription_id            = "2837fa98-ba70-4d44-a7e7-730ceb335460"
   skip_provider_registration = true
-  client_id                  = "c788c8aa-fd22-4322-bef2-51e220837bc3"
-  client_secret              = var.azure_client_secret
-  tenant_id                  = "58e803e1-2e99-4c7f-be40-91919fbcc41d"
 }
 
 # Create a resource group
