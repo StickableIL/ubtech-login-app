@@ -1,1 +1,2 @@
 .terraform/providers/**/*.exe
+.env
