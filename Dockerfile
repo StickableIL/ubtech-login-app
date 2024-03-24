@@ -35,7 +35,7 @@ WORKDIR /app
 RUN npm run build --prefix client
 
 # Expose the port on which the server will run
-EXPOSE 80
+EXPOSE 80 443
 
 # Start the server
 CMD ["node", "server/server.js"]
