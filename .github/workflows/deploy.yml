@@ -17,17 +17,17 @@ jobs:
       uses: azure/login@v1
       with:
         creds: '{"clientId":"${{ secrets.AZURE_CLIENT_ID }}","clientSecret":"${{ secrets.AZURE_CLIENT_SECRET }}","subscriptionId":"2837fa98-ba70-4d44-a7e7-730ceb335460","tenantId":"${{ secrets.AZURE_TENANT_ID }}"}'
-        
-    - name: Apply Terraform configuration
-      env:
-        TF_VAR_azure_tenant_id: ${{ secrets.AZURE_TENANT_ID }}
-      run: terraform apply -auto-approve
 
     - name: Initialize Terraform
       uses: hashicorp/terraform-github-actions@master
       with:
         tf_actions_version: latest
         tf_actions_subcommand: init
+
+    - name: Apply Terraform configuration
+      env:
+        TF_VAR_azure_tenant_id: ${{ secrets.AZURE_TENANT_ID }}
+      run: terraform apply -auto-approve
 
     - name: Build and push Docker image to ACR
       run: |
